@@ -19,28 +19,26 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Text("onDrag count: \(onDragCount)")
-            ScrollView {
-                ForEach(items, id: \.self) { item in
-                    HStack {
-                        Spacer()
-                        Text("Item \(item)")
-                        Spacer()
-                    }
-                    .frame(height: 30)
-                    .border(Color.blue, width: 3)
-                    .background(Color.gray)
-                    .padding()
-                    .onDrag {
-                        onDragCount += 1
-                        currentItemOffset = items.firstIndex(of: item)!
-                        return .init(object: "\(item)" as NSString)
-                    }
-                    .onDrop(of: [.text],
-                            delegate: MyInsideDelegate(
-                                offset: items.firstIndex(of: item)!,
-                                currentItemOffset: $currentItemOffset,
-                                onMove: onMove))
+            ForEach(items, id: \.self) { item in
+                HStack {
+                    Spacer()
+                    Text("Item \(item)")
+                    Spacer()
                 }
+                .frame(height: 30)
+                .border(Color.blue, width: 3)
+                .background(Color.gray)
+                .padding()
+                .onDrag {
+                    onDragCount += 1
+                    currentItemOffset = items.firstIndex(of: item)!
+                    return .init(object: "\(item)" as NSString)
+                }
+                .onDrop(of: [.text],
+                        delegate: MyInsideDelegate(
+                            offset: items.firstIndex(of: item)!,
+                            currentItemOffset: $currentItemOffset,
+                            onMove: onMove))
             }
         }
         .animation(.default, value: items)
@@ -65,10 +63,10 @@ struct MyInsideDelegate: DropDelegate {
     }
 
     func dropEntered(info: DropInfo) {
-        guard let currentOffset = currentItemOffset.wrappedValue,
-                  currentOffset != offset else {
+        guard let currentOffset = currentItemOffset.wrappedValue, currentOffset != offset else {
             return
         }
+        
         let moveOffset = offset > currentOffset ? offset + 1 : offset
         onMove(currentOffset, moveOffset)
         currentItemOffset.wrappedValue = offset
